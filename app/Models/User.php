@@ -22,6 +22,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'avatar',
+        'last_seen_at',
+
     ];
 
     /**
@@ -45,5 +48,22 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function conversations()
+    {
+        return $this->belongsToMany(Conversation::class, 'participants')
+            ->withPivot('role', 'joined_at')->withTimestamps();
+    }
+
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'user_id');
+    }
+
+    public function receivedMessages()
+    {
+        return $this->belongsToMany(Message::class, 'recipients')
+            ->withPivot('read_at')->withTimestamps();
     }
 }
